@@ -6,9 +6,7 @@ In this example we are configuring the setup with **terraform** and **AWS provid
 
 We can move to our project and the following diagram shows a sample representation of the whole setup.
 
-
-
-
+![final-picture](https://user-images.githubusercontent.com/61390678/210266165-3c609d43-6cc4-4227-9a29-35cb80fc9909.png)
 
 Let’s talk more about based on the above picture which will be easy to understand.
 
