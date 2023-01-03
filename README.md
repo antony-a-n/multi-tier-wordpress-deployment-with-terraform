@@ -49,6 +49,7 @@ git clone https://github.com/antony-a-n/multi-tier-wordpress-deployment-with-ter
 run the code 
 ```
 cd multi-tier-wordpress-deployment-with-terraform
+terraform init
 terraform validate
 terraform plan 
 terraform apply 
