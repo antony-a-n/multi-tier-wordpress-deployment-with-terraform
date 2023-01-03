@@ -46,7 +46,7 @@ Prerequisite
 ```
 git clone https://github.com/antony-a-n/multi-tier-wordpress-deployment-with-terraform.git
 ```
-- run the bash script with required privileges
+run the bash script with required privileges
 ```
 cd multi-tier-wordpress-deployment-with-terraform
 terraform validate
