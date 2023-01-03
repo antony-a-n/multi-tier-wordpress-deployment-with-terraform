@@ -36,3 +36,21 @@ In the backed userdata, ie, ‘mysql.sh’ in this example, we are installing ma
 Once you apply the code in terraform console Wordpress will be configured automatically and you only need to complete the installation by setting up a user name and password.
 
 Please have a look and if you need any clarification please let me know, also suggestions are invited :)
+
+Prerequisite
+=============
+
+- IAM user with programmatic access and AmazonEc2FullAccess and AmazonRoute53FullAccess
+- machine with  latest git and terraform installed
+
+ Use git clone to download the project files to your local system for execution
+```
+git clone https://github.com/antony-a-n/multi-tier-wordpress-deployment-with-terraform.git
+```
+- run the bash script with required privileges
+```
+cd multi-tier-wordpress-deployment-with-terraform
+terraform validate
+terraform plan 
+terraform apply 
+```
