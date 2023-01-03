@@ -40,7 +40,7 @@ Please have a look and if you need any clarification please let me know, also su
 Prerequisite
 
 - IAM user with programmatic access and AmazonEc2FullAccess and AmazonRoute53FullAccess
-- machine with  latest git and terraform installed
+- machine with  latest version of git and terraform installed
 
  Use git clone to download the project files to your local system for execution
 ```
