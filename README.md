@@ -38,7 +38,6 @@ Once you apply the code in terraform console Wordpress will be configured automa
 Please have a look and if you need any clarification please let me know, also suggestions are invited :)
 
 Prerequisite
-=============
 
 - IAM user with programmatic access and AmazonEc2FullAccess and AmazonRoute53FullAccess
 - machine with  latest git and terraform installed
