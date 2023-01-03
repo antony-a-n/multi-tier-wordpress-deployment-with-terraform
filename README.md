@@ -16,6 +16,8 @@ We keep our web server/front end in a public subnet and our database/backend ser
 
 3 instances are launched for our VPC, named as frontend,bastion,backend using the resource **aws_instance**. In the frontend server, we are enabling HTTP, SSH, and HTTPS traffic to the server via a security group attached to the instance. In the same way, MYSQL and SSH access are enabled for the backed/DB server. All the instances are using the AMI of amazon linux. As already mentioned ssh access is only from the bastion server and the bastion server is accessible from everywhere. It is not recommended in the production environment. If you are having a static IP you can add the IP address in the security group for better security.
 
+One thing to notice here that you will get internet access to instances created in private subnet only after **NAT gateway** is created.When terraform creates the infra as per the code we have created NAT gateway lauches at the last point. So when the backend instance tried to run the userdata it will be ended up in nothing. because the instance doesn't have internet access and it can't download and instal MYSQL and do the rest things.Here comes the role of dependency.When we configure the  backend instance we are adding a dependency on NAT gateway using the **depends_on** argument.So the backend instance will only create after the NAT gateway is up and running.
+
 All in instances in the VPC are connected via a generated keypair. the Keypair is generated using ssh-keygen and it is saved in the working directory as mykey and mykey.pub
 The generated keys are attached to the resource **aws_key_pair** via the **file** option.
 
