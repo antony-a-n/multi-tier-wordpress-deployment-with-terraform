@@ -46,7 +46,7 @@ Prerequisite
 ```
 git clone https://github.com/antony-a-n/multi-tier-wordpress-deployment-with-terraform.git
 ```
-run the code 
+run the following commands
 ```
 cd multi-tier-wordpress-deployment-with-terraform
 terraform init
