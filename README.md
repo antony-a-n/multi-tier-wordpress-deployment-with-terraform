@@ -17,7 +17,7 @@ We are creating a VPC with CIDR **172.16.0.0/16** and hosting a multi-tire Wordp
 
 Also we are setting up a few **outputs** of vpc-module such as VPC id,NATGW id, public and private subnets ids for later use such as deploying  instances whithin the VPC and the security group associations.
 
-We keep our web server/front-end in a public subnet and our database/backend server in a different public subnet within the VPC. And ssh access to these resources is only enabled from the bastion server and it is also located in a separate public subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via a NAT gateway.
+We keep our web server/front-end in a public subnet and our database/backend server in a different private subnet within the VPC. And ssh access to these resources is only enabled from the bastion server and it is also located in a separate public subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via the NAT gateway.
 
 We are setting the **NAT gateway** as a optional feature which used for internet traffic in the priavte subnets. If you don't need a NAT gateway in your infra you can set the variable **enable_nat_gateway** as **false**. If you set the value to false the **elastic IP**(EIP), which required for the NAT gateway won't be created and your infra will be launched without a NAT gateway, still the private subnets will be associated with the private route table.By default the value of enable_nat_gateway is set to **true**.
 
@@ -31,7 +31,7 @@ The generated keys are attached to the resource **aws_key_pair** via the **file*
 
 Also, we are using 2 **route 53** zones within our VPC. The private zone is set up to resolve the connection between the database server and the front-end server. Please note that DNS records in the private subnet are only resolved within the VPC. The already existing public zone is used to set up the domain URL and it is accessed via the **data source**.
 
-2 route tables created for the VPC. **rtb-public** and **rtb-private**. All the public subnets are associated with the rtb-public and private subnets are connected to rtb-private.We have 3 security groups created for the instances. backed, bastion and front-end.
+2 route tables created for the VPC. **rtb-public** and **rtb-private**. All the public subnets are associated with the rtb-public and private subnets are connected to rtb-private.We have 3 security groups created for the instances. backed, bastion and front-end.The inbound rules to the security groups are done with the **dynamic ingress** option which will reduce the code length. The ports are specified via variables.
 
 Here the whole terraform code is splitted into 6 .tf files and you need to configure the **provider.tf** with your access key and secret key which is passed via variables.You can change values in the **variables.tf** file as per your requirement and change the default value to your required ones . we are using a few variables for our code than hardcoding the direct values so it would helpful while reusing the code for creating a different infra.Also we are using the locals options to pass a few values.
 
