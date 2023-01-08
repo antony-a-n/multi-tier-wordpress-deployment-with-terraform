@@ -19,7 +19,7 @@ Also we are setting up a few **outputs** of vpc-module such as VPC id,NATGW id, 
 
 We keep our web server/front-end in a public subnet and our database/backend server in a different public subnet within the VPC. And ssh access to these resources is only enabled from the bastion server and it is also located in a separate public subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via a NAT gateway.
 
-We are setting the **NAT gateway** as a optional feature. If you don't need a NAT gateway in your infra you can set the variable **enable_nat_gateway** as **false**. If you set the value to false the **elastic IP**, which required for the NAT gateway won't be created and your infra will be launched without a NAT gateway, still the private subnets will be associated with the private route table.By default the value of enable_nat_gateway is set to **true**.
+We are setting the **NAT gateway** as a optional feature for internet traffic in the priavte subnets. If you don't need a NAT gateway in your infra you can set the variable **enable_nat_gateway** as **false**. If you set the value to false the **elastic IP**, which required for the NAT gateway won't be created and your infra will be launched without a NAT gateway, still the private subnets will be associated with the private route table.By default the value of enable_nat_gateway is set to **true**.
 
 3 instances are launched for our VPC, named as frontend,bastion,backend using the resource **aws_instance**. In the frontend server, we are enabling HTTP, SSH, and HTTPS traffic to the server via a security group attached to the instance. In the same way, MYSQL and SSH access are enabled for the backed/DB server. All the instances are using the AMI of amazon linux. As already mentioned ssh access is only from the bastion server and the bastion server is accessible from everywhere. It is not recommended in the production environment. If you are having a static IP you can add the IP address in the security group for better security.
 
@@ -30,8 +30,6 @@ All in instances in the VPC are connected via a generated keypair. the Keypair i
 The generated keys are attached to the resource **aws_key_pair** via the **file** option.
 
 Also, we are using 2 **route 53** zones within our VPC. The private zone is set up to resolve the connection between the database server and the front-end server. Please note that DNS records in the private subnet are only resolved within the VPC. The already existing public zone is used to set up the domain URL and it is accessed via the data source.
-
-In order to enable internet traffic to the private subnets, we are launching a NAT gateway, and to set up the NAT gateway you have to purchase an EIP (elastic IP address).
 
 2 route tables created for the VPC. **rtb-public** and **rtb-private**. All the public subnets are associated with the rtb-public and private subnets are connected to rtb-private.We have 3 security groups created for the instances. backed, bastion and front-end.
 
