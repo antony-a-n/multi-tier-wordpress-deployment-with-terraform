@@ -29,10 +29,10 @@ Let’s talk more about based on the above representation which will be easy to 
 |iplist |list of IPs which have ssh access to your bastion server |          
 |ports-front |ports defined  for creating security group for webserver | 
 |ssh-outside |condition check,If it is set as true you can access the bastion server from anywhere | |
-|ssh-backend-pub|condition check,If it is set as true you can access the database server from anywhre within the VPC| |
+|ssh-backend-pub|condition check,If it is set as true you can access the database server from anywhre within the VPC,by default ssh access is only from bastion server| 
 |db-port   |port for databse service  |                                   
 |bastion-port|ssh port for backend server |                              
-|enable_nat_gateway|condtion check,if it is set as true a NAT gateway will be launched for pulic subnets | |
+|enable_nat_gateway|condtion check,if it is set as true a NAT gateway will be launched for pulic subnets | 
 
 We are setting the the whole VPC setup with as a **module** which consits of a VPC, IGW,NAT, public and private subnets and it's associations.You only need to pass the
 values to variables such as "project" , "environment" , "CIDR block" etc.
