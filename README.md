@@ -39,7 +39,7 @@ We are using 2 bash scripts as userdata for the front-end server and dbserver na
 
 Regarding the userdata, while executing the ‘frontend.sh’ userdata PHP and apache packages will be installed. Since Wordpress required the latest php version we are installing it with help of amazon-linux install.Once these packages are installed the script will download the latest version of Wordpress via wget and will extract the Wordpress files to /var/ww/html and setting up the required permissions and ownmership.Once this configured we need to setup the wp-config file.Since we are using the database in a different server from a different subnet, we have to configure the db host too. instead of localhost.We are setting the value of db host as db.local and it is resolvable in the VPC. and other values are passed and variables and they are replaced in the wp-config.php file via sed command.
 
-In the backed userdata, ie, ‘mysql.sh’ in this example, we are installing mariadb-server package and creating database and database user.We are passing the database and username as variables so that you can easily modified them if required by changing the values in the variables.
+In the backed userdata, ie, ‘mysql.sh’ in this example, we are installing mariadb-server package and creating database and database user.We are passing the database and username as variables so that you can easily modified them if required, by changing the values in the variables.
 
 Once you apply the code in terraform console Wordpress will be configured automatically and you only need to complete the installation by setting up a user name and password.
 
