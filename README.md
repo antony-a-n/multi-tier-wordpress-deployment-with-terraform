@@ -10,7 +10,7 @@ We can move to our project and the following diagram shows a sample representati
 
 Let’s talk more about based on the above representation which will be easy to understand.
 
-We are setting the the whole VPC setup with as a **module** which consits of a vpc, IGW,NAT, public and private subnets and it's associations.You only need to pass the
+We are setting the the whole VPC setup with as a **module** which consits of a VPC, IGW,NAT, public and private subnets and it's associations.You only need to pass the
 values to variables such as "project" , "environment" , "CIDR block" etc.
 
 We are creating a VPC with CIDR **172.16.0.0/16** and hosting a multi- tire Wordpress website in this example. Within the VPC, 3 private and 3 public subnets are created. The subnets are created using the function **cidrsubnet**.You don't need to manually setup the subnets, the code will automatically create the subnets basesd on the no of availability zones in the region.and by default they are subnetted at **/20**. For enabling public IP to the instances launched in the public subnet we are setting up the **map_public_ip_on_launch** value as **true**.
