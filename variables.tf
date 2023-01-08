@@ -1,9 +1,9 @@
 variable "project" {
-  default     = "test" 
+  default = "wordpress"
 }
 
 variable "environment" {
-  default     = "production"
+  default = "staging"
 }
 
 variable "region" {
@@ -29,29 +29,87 @@ variable "instance_type" {
   default = "t2.micro"
 }
 locals {
-     common_tags = {
- "project" = var.project
- "environment" = var.environment 
-}
-}
-variable "vpc_cidr" {
-    default = "172.16.0.0/16"
+  common_tags = {
+    "project"     = var.project
+    "environment" = var.environment
+  }
 }
 
+variable "vpc_cidr" {
+  default = "172.16.0.0/16"
+}
 
 locals {
-   az = length (data.aws_availability_zones.available.names)
+  az = length(data.aws_availability_zones.available.names)
 }
 variable "port" {
-  type = list(string)
-  default = ["22","3306","80","443"]
+  type    = list(string)
+  default = ["22", "3306", "80", "443"]
 }
 
-variable "private-domain"{
-   default= "antonyan.local"
+variable "private-domain" {
+  default = "antonyan.local"
 }
 
-variable "domain"{
+variable "domain" {
   default = "antonyan.tech"
 
+}
+
+variable "database" {
+  default = "wp_db"
+}
+variable "database-user" {
+  default = "dbuser"
+}
+
+variable "database-password" {
+  default = "wp123"
+}
+
+variable "root-password" {
+  default = "qwertyuiop@123"
+}
+
+locals {
+  db-host = "db.${var.private-domain}"
+}
+
+variable "ports" {
+
+  type    = list(string)
+  default = [22, 80, 443, 8080]
+}
+
+variable "my_env" {
+  type    = string
+  default = "stage"
+
+
+}
+
+variable "iplist" {
+  type    = list(string)
+  default = ["137.59.78.57/32", "1.2.3.4/32", "2.2.2.2/32", "49.15.201.201/32", "0.0.0.0/0"]
+}
+
+variable "ports-front" {
+  type    = list(string)
+  default = ["443", "80", "8080"]
+}
+
+variable "ssh-outside" {
+  default = false
+}
+
+variable "ssh-backend-pub" {
+  default = false
+}
+
+variable "db-port" {
+  default = 3306
+}
+
+variable "bastion-port" {
+  default = 22
 }
