@@ -126,7 +126,7 @@ resource "aws_instance" "bastion" {
   subnet_id              = module.vpc.public_subnets.1
   vpc_security_group_ids = [aws_security_group.bastion.id]
   tags = {
-    "Name" = "${var.project}-${var.environment}-bastion"
+    "Name" = "${var.project}-${var.environment}-bastion-sg"
 
   }
 }
