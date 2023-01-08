@@ -46,7 +46,10 @@ In the backed userdata, ie, ‘mysql.sh’ in this example, we are installing ma
 
 Once you apply the code in terraform console Wordpress will be configured automatically and you only need to complete the installation by setting up a user name and password.
 
-You will get a output as follows.
+You will get a wordpress installation page as follows.
+
+![wp](https://user-images.githubusercontent.com/61390678/211187067-88859788-a5a9-438d-99f4-a2455777b913.png)
+
 
 Please have a look and if you need any clarification please let me know, also suggestions are invited :)
 
