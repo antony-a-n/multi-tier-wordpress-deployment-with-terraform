@@ -34,26 +34,18 @@ locals {
     "environment" = var.environment
   }
 }
-
 variable "vpc_cidr" {
   default = "172.16.0.0/16"
 }
-
 locals {
   az = length(data.aws_availability_zones.available.names)
 }
-variable "port" {
-  type    = list(string)
-  default = ["22", "3306", "80", "443"]
-}
-
 variable "private-domain" {
   default = "antonyan.local"
 }
 
 variable "domain" {
   default = "antonyan.tech"
-
 }
 
 variable "database" {
@@ -75,17 +67,9 @@ locals {
   db-host = "db.${var.private-domain}"
 }
 
-variable "ports" {
-
-  type    = list(string)
-  default = [22, 80, 443, 8080]
-}
-
 variable "my_env" {
   type    = string
   default = "stage"
-
-
 }
 
 variable "iplist" {
