@@ -13,12 +13,11 @@ Let’s talk more about based on the above representation which will be easy to 
 We are setting the the whole VPC setup with as a **module** which consits of a VPC, IGW,NAT, public and private subnets and it's associations.You only need to pass the
 values to variables such as "project" , "environment" , "CIDR block" etc.
 
-We are creating a VPC with CIDR **172.16.0.0/16** and hosting a multi-tire Wordpress website in this example. Within the VPC, 3 private and 3 public subnets are created. The subnets are created using the function **cidrsubnet**.You don't need to manually setup the subnets, the code will automatically create the subnets basesd on the no of availability zones in the region.and by default they are subnetted at **/20**. For enabling public IP to the instances launched in the public subnet we are setting up the **map_public_ip_on_launch** value as **true**.
+We are creating a VPC with CIDR **172.16.0.0/16** and hosting a multi-tire Wordpress website in this example. Within the VPC, 3 private and 3 public subnets are created. The subnets are created using the function **cidrsubnet**.You don't need to manually setup the subnets, the code will automatically create the subnets basesd on the no of availability zones in the region,and by default they are subnetted at **/20**. For enabling public IP to the instances launched in the public subnet, we are setting up the **map_public_ip_on_launch** value as **true**.
 
-We are setting up a few **outputs** of vpc-module such as VPC id,NAT id, public and private subnets ids for later use such as deplotying the instances whithin the VPC 
-and the security group associations.
+Also we are setting up a few **outputs** of vpc-module such as VPC id,NATGW id, public and private subnets ids for later use such as deploying  instances whithin the VPC and the security group associations.
 
-We keep our web server/front end in a public subnet and our database/backend server in a different public subnet within the VPC. And ssh access to these resources is only enabled from the bastion server and it is also located in a separate public subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via a NAT gateway.
+We keep our web server/front-end in a public subnet and our database/backend server in a different public subnet within the VPC. And ssh access to these resources is only enabled from the bastion server and it is also located in a separate public subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via a NAT gateway.
 
 We are setting the **NAT gateway** as a optional feature. If you don't need a NAT gateway in your infra you can set the variable **enable_nat_gateway** as **false**. If you set the value to false the **elastic IP**, which required for the NAT gateway won't be created and your infra will be launched without a NAT gateway, still the private subnets will be associated with the private route table.By default the value of enable_nat_gateway is set to **true**.
 
