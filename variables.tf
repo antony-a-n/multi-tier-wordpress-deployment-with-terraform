@@ -67,11 +67,6 @@ locals {
   db-host = "db.${var.private-domain}"
 }
 
-variable "my_env" {
-  type    = string
-  default = "stage"
-}
-
 variable "iplist" {
   type    = list(string)
   default = ["137.59.78.57/32", "1.2.3.4/32", "2.2.2.2/32", "49.15.201.201/32", "0.0.0.0/0"]
