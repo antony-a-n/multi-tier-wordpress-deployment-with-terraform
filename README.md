@@ -17,7 +17,7 @@ We are creating a VPC with CIDR **172.16.0.0/16** and hosting a multi-tire Wordp
 
 Also we are setting up a few **outputs** of vpc-module such as VPC id,NATGW id, public and private subnets ids for later use such as deploying  instances whithin the VPC and the security group associations.
 
-We keep our web server/front-end in a public subnet and our database/backend server in a different private subnet within the VPC. And ssh access to these resources is only enabled from the bastion server and it is also located in a different public subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via the NAT gateway.
+We keep our **webserver/front-end** in a *public* subnet and our **database/backend** server in a different *private* subnet within the VPC. And ssh access to these resources is only enabled from the **bastion** server and it is also located in a different *public* subnet within the VPC. Internet access to the whole VPC is through **IGW** and **NATGW**. Internet access to private subnets is enabled via the NAT gateway.
 
 We are setting the **NAT gateway** as a optional feature which used for internet traffic in the priavte subnets. If you don't need a NAT gateway in your infra you can set the variable **enable_nat_gateway** as **false**. If you set the value to false the **elastic IP**(EIP), which required for the NAT gateway won't be created and your infra will be launched without a NAT gateway, still the private subnets will be associated with the private route table.By default the value of enable_nat_gateway is set to **true**.The condition based decision making is done with help of **count** option.
 
