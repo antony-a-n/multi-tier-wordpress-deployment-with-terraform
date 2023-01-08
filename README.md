@@ -8,7 +8,31 @@ We can move to our project and the following diagram shows a sample representati
 
 ![final-picture](https://user-images.githubusercontent.com/61390678/210266165-3c609d43-6cc4-4227-9a29-35cb80fc9909.png)
 
-Let’s talk more about based on the above representation which will be easy to understand.
+Let’s talk more about based on the above representation which will be easy to understand.Before that we can have a look on the variables that we have used in our code.
+
+|Variable|Description                                              
+| --- | --- |
+|project|project name |                                         
+|environment|project environment |                                    
+|region|your aws region |                                              
+| access_key | access key of IAM user |                                  
+| secret_key | secret key of IAM user |                                  
+| instance_ami | AMI for instances launched |                            
+| instance_type  |type of instaces launched |                            
+| vpc_cidr  | CIDR block which the VPC will use |                       
+| private-domain  | private domain which used as the database host |     
+| domain | domain which you need to install wordpress |                  
+| database | database name of your wordpress site|                       
+| database-user | database user for the wordpress |                      
+| database-password | password of your database  |                       
+|root-password  |password of root user in your mysql server |                   
+|iplist |list of IPs which have ssh access to your bastion server |          
+|ports-front |ports defined  for creating security group for webserver | 
+|ssh-outside |condition check,If it is set as true you can access the bastion server from anywhere | |
+|ssh-backend-pub|condition check,If it is set as true you can access the database server from anywhre within the VPC| |
+|db-port   |port for databse service  |                                   
+|bastion-port|ssh port for backend server |                              
+|enable_nat_gateway|condtion check,if it is set as true a NAT gateway will be launched for pulic subnets | |
 
 We are setting the the whole VPC setup with as a **module** which consits of a VPC, IGW,NAT, public and private subnets and it's associations.You only need to pass the
 values to variables such as "project" , "environment" , "CIDR block" etc.
