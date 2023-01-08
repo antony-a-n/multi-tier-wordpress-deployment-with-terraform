@@ -2,7 +2,7 @@ Hello all,
 
 **Infrastructure as a code** or simply **IaC** is a way of creating your infrastructure via code. Adwantages of using IaC are **fast** and **less time consuming**,and by using version control tools such as git you can setup the versioning too.
 
-In this example we are configuring the setup with **Terraform** and **AWS provider**.Terraform is a well known and globaly used IaC tool for creating and managing infra.
+In this example we are configuring the setup with **Terraform** and **AWS provider**.Terraform is a well known and globaly used IaC tool for creating and managing infrastructure.
 
 We can move to our project and the following diagram shows a sample representation of the whole setup.
 
