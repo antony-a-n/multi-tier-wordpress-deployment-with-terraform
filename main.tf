@@ -1,283 +1,169 @@
-#setting up key-pair
-
+module "vpc" {
+  source             = "/var/vpc-module"
+  project            = var.project
+  environment        = var.environment
+  vpc_cidr           = var.vpc_cidr
+  enable_nat_gateway = true
+}
 resource "aws_key_pair" "ssh-key" {
   key_name   = "${var.project}-${var.environment}"
   public_key = file("mykey.pub")
   tags = {
-    "Name"        = "${var.project}-${var.environment}"
+    "Name" = "${var.project}-${var.environment}"
   }
 }
+resource "aws_ec2_managed_prefix_list" "my-ips" {
+  name           = "${var.project}-${var.environment}-prefix-list"
+  address_family = "IPv4"
+  max_entries    = length(var.iplist)
 
-#creating VPC
-
-resource "aws_vpc" "vpc-terra" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
-  enable_dns_support = true
-  enable_dns_hostnames = true
-
-  tags = {
-    Name = "${var.project}-${var.environment}"
+  dynamic "entry" {
+    
+    for_each = toset(var.iplist)
+    iterator = ip
+    
+    content {
+      cidr = ip.value
+    } 
   }
 }
-
-resource "aws_internet_gateway" "terra-gw" {
-  vpc_id = aws_vpc.vpc-terra.id
-
-  tags = {
-    Name = "${var.project}-${var.environment}"
-  }
-}
-
-#creating public subnets
-
-resource "aws_subnet" "public" {
-
-  count = local.az
-  vpc_id     = aws_vpc.vpc-terra.id
-  cidr_block = cidrsubnet(var.vpc_cidr, 4, count.index)
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = true 
-  tags = {
-    Name = "${var.project}-${var.environment}-public"
-  }
-}
-
-#creating private subnets
-
-resource "aws_subnet" "private" {
-
-  count = local.az
-  vpc_id     = aws_vpc.vpc-terra.id
-  cidr_block = cidrsubnet(var.vpc_cidr, 4, "${count.index + local.az}")
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = false 
-  tags = {
-    Name = "${var.project}-${var.environment}-private"
-  }
-}
-
-resource "aws_eip" "vpc-terra-eip" {
-  vpc      = true
-}
-
-#setting up natgateway
-
-resource "aws_nat_gateway" "terra-nat" {
-  allocation_id = aws_eip.vpc-terra-eip.id
-  subnet_id     = aws_subnet.public.1.id
-  
-
-  tags = {
-    Name = "${var.project}-${var.environment}-NAT"
-  }
-
-}
-#setting up public route table 
-
-resource "aws_route_table" "vpc-terra-public" {
-  vpc_id = aws_vpc.vpc-terra.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.terra-gw.id
-}
-    tags = {
-    Name = "${var.project}-${var.environment}-rtb-public"
-  
-}
-}
-
-#setting up private route-table 
-
-resource "aws_route_table" "vpc-terra-private" {
-  vpc_id = aws_vpc.vpc-terra.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id =aws_nat_gateway.terra-nat.id
-}
-    tags = {
-    Name = "${var.project}-${var.environment}-rtb-private"
-  
-}
-}
-
-#setting up public route table association
-
-resource "aws_route_table_association" "public" {
-  count = local.az
-  subnet_id      = aws_subnet.public[count.index].id
-  route_table_id = aws_route_table.vpc-terra-public.id
-}
-
-
-
-#setting up private  route table association
-
-resource "aws_route_table_association" "private" {
-  count = local.az
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.vpc-terra-private.id
-}
-
-#creating security groups
-
 resource "aws_security_group" "bastion" {
-  name        = "${var.project}-${var.environment}-bastion"
-  vpc_id = aws_vpc.vpc-terra.id
-ingress {
-    description      = "allow ssh access"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+  name   = "${var.project}-${var.environment}-bastion-sg"
+  vpc_id = module.vpc.vpc_id
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    prefix_list_ids = [aws_ec2_managed_prefix_list.my-ips.id]
+
   }
 
- egress {
+  egress {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   tags = {
-    Name = "allow_tls"
+    "Name" = "${var.project}-${var.environment}-bastion"
+
   }
 }
 
 
 resource "aws_security_group" "front-end" {
-  name        = "${var.project}-${var.environment}-front-end"
-  vpc_id = aws_vpc.vpc-terra.id
+  name   = "${var.project}-${var.environment}-front-end-sg"
+  vpc_id = module.vpc.vpc_id
 
-    ingress {
-    description      = "allow ssh access"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    security_groups =  [aws_security_group.bastion.id]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+  dynamic "ingress" {
+    for_each = toset(var.ports-front)
+    iterator = port
+    content {
+      from_port   = port.value
+      to_port     = port.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
 
-     ingress {
-    description      = "allow http access"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
   }
 
   ingress {
-    description      = "allow http access"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
- egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "allow_tls"
-  }
-}
-
-
-resource "aws_security_group" "back-end" {
-  name        = "${var.project}-${var.environment}-back-end"
-  vpc_id = aws_vpc.vpc-terra.id
-
-    ingress {
-    description      = "allow ssh access"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    cidr_blocks     = var.ssh-outside == true ? ["0.0.0.0/0"] : null
     security_groups = [aws_security_group.bastion.id]
-    ipv6_cidr_blocks = ["::/0"]
   }
 
-     ingress {
-    description      = "allow mysql access"
-    from_port        = 3306
-    to_port          = 3306
-    protocol         = "tcp"
-    security_groups = [aws_security_group.front-end.id]
-
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-   egress {
+  egress {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  tags = {
+    "Name" = "${var.project}-${var.environment}-front-end-sg"
+
+  }
+}
+resource "aws_security_group" "back-end" {
+  name   = "${var.project}-${var.environment}-back-end-sg"
+  vpc_id = module.vpc.vpc_id
+  ingress {
+    from_port       = var.db-port
+    to_port         = var.db-port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.front-end.id]
   }
 
+  ingress {
+    from_port       = var.bastion-port
+    to_port         = var.bastion-port
+    protocol        = "tcp"
+    cidr_blocks     = var.ssh-backend-pub == true ? ["0.0.0.0/0"] : null
+    security_groups = [aws_security_group.bastion.id]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
   tags = {
-    Name = "allow_tls"
+    "Name" = "${var.project}-${var.environment}-back-end-sg"
   }
 }
 
-#creating instances
-
-resource "aws_instance" "front-end-server" {
+resource "aws_instance" "bastion" {
   ami                    = var.instance_ami
-  user_data              = file("frontend.sh")
   instance_type          = var.instance_type
-  depends_on = [aws_instance.back-end-server]
-  subnet_id =aws_subnet.public.0.id
   key_name               = aws_key_pair.ssh-key.key_name
+  subnet_id              = module.vpc.public_subnets.1
+  vpc_security_group_ids = [aws_security_group.bastion.id]
+  tags = {
+    "Name" = "${var.project}-${var.environment}-bastion"
+
+  }
+}
+resource "aws_instance" "front-end-server" {
+
+  ami           = var.instance_ami
+  instance_type = var.instance_type
+  key_name      = aws_key_pair.ssh-key.key_name
+  subnet_id              = module.vpc.public_subnets.0
+  user_data              = data.template_file.web.rendered
   vpc_security_group_ids = [aws_security_group.front-end.id]
   tags = {
-    "Name"        = "${var.project}-${var.environment}-front-end"
-    
+    "Name" = "${var.project}-${var.environment}-front-end"
   }
 }
 
 resource "aws_instance" "back-end-server" {
+
   ami                    = var.instance_ami
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.private.0.id
-  depends_on = [aws_nat_gateway.terra-nat]
   key_name               = aws_key_pair.ssh-key.key_name
-  user_data              = file("mysql.sh")
+  depends_on             = [module.vpc.nat_gateway]
+  subnet_id              = module.vpc.private_subnets.0
+  user_data              = data.template_file.db.rendered
   vpc_security_group_ids = [aws_security_group.back-end.id]
   tags = {
-    "Name"        = "${var.project}-${var.environment}-backend"
-    
+    "Name" = "${var.project}-${var.environment}-back-end"
   }
 }
-
-resource "aws_instance" "bastion-server" {
-  ami                    = var.instance_ami
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.public.1.id
-  key_name               = aws_key_pair.ssh-key.key_name
-  vpc_security_group_ids = [aws_security_group.bastion.id]
-  tags = {
-    "Name"        = "${var.project}-${var.environment}-bastion"
-    
-  }
-}
-
-#creating route 53 zone
-
 resource "aws_route53_zone" "private" {
   name = var.private-domain
 
   vpc {
-    vpc_id = aws_vpc.vpc-terra.id
+    vpc_id = module.vpc.vpc_id
   }
 }
+
 resource "aws_route53_record" "www" {
   zone_id = aws_route53_zone.private.zone_id
   name    = "db.${var.private-domain}"
@@ -286,7 +172,6 @@ resource "aws_route53_record" "www" {
   records = [aws_instance.back-end-server.private_ip]
 }
 
-#fetching data of existing route 53 zone
 resource "aws_route53_record" "www-url" {
   zone_id = data.aws_route53_zone.mydomain.zone_id
   name    = "wordpress.${var.domain}"
@@ -294,3 +179,4 @@ resource "aws_route53_record" "www-url" {
   ttl     = 300
   records = [aws_instance.front-end-server.public_ip]
 }
+
