@@ -1,5 +1,5 @@
 module "vpc" {
-  source             = "/var/vpc-module"
+  source             = "github.com/antony-a-n/aws-vpc-module"
   project            = var.project
   environment        = var.environment
   vpc_cidr           = var.vpc_cidr
