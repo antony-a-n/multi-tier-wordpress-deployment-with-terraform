@@ -35,7 +35,7 @@ Let’s talk more about based on the above representation which will be easy to 
 |enable_nat_gateway|condtion check,if it is set as true a NAT gateway will be launched for pulic subnets | 
 
 We are setting the the whole VPC setup with as a **module** which consits of a VPC, IGW,NAT, public and private subnets and it's associations.You only need to pass the
-values to variables such as "project" , "environment" , "CIDR block" etc. The code for VPC module is stored in a github repository "aws-vpc-module" in htis same account. the path to vpc module is "github.com/antony-a-n/aws-vpc-module".
+values to variables such as "project" , "environment" , "CIDR block" etc. The code for VPC module is stored in a github repository "aws-vpc-module" in htis same account. You can view the module  [here]("github.com/antony-a-n/aws-vpc-module").
 
 We are creating a VPC with CIDR **172.16.0.0/16** and hosting a multi-tire Wordpress website in this example. Within the VPC, 3 private and 3 public subnets are created. The subnets are created using the function **cidrsubnet**.You don't need to manually setup the subnets, the code will automatically create the subnets basesd on the no of availability zones in the region,and by default they are subnetted at **/20**. For enabling public IP to the instances launched in the public subnet, we are setting up the **map_public_ip_on_launch** value as **true**.
 
